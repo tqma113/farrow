@@ -76,7 +76,7 @@ export const Validator = {
     const validatorImpl = Validator.get(Ctor)
 
     if (!validatorImpl) {
-      throw new Error(`No impl found for Validator, Ctor: ${Ctor}`)
+      throw new Error(`Unknown Schema: ${Ctor}`)
     }
 
     return validatorImpl.validate(input, options) as ValidationResult<TypeOf<T>>
@@ -88,7 +88,7 @@ Validator.impl(S.String, {
     if (typeof input === 'string') {
       return Ok(input)
     }
-    return SchemaErr(`${input} is not a string`)
+    return SchemaErr(UnexpectedMessage('string', JSON.stringify(input)))
   },
 })
 
@@ -103,7 +103,7 @@ const parseNumberLiteral = (input: unknown): Result<number> => {
       return Ok(value)
     }
   }
-  return Err(`Expected a string, but got ${input}`)
+  return Err(UnexpectedMessage('number', JSON.stringify(input)))
 }
 
 Validator.impl(S.Number, {
@@ -115,7 +115,7 @@ Validator.impl(S.Number, {
       if (result.isOk) return result
     }
 
-    return SchemaErr(`${input} is not a number`)
+    return SchemaErr(`Expected number, but got ${input}`)
   },
 })
 
@@ -131,7 +131,7 @@ Validator.impl(S.Int, {
       if (result.isOk) return Ok(Math.floor(result.value))
     }
 
-    return SchemaErr(`${input} is not an integer`)
+    return SchemaErr(`Expected integer, but got ${input}`)
   },
 })
 
@@ -513,4 +513,8 @@ export const RegExp = (regexp: RegExp) => {
       return this.Err(`${text} was not matched: ${regexp}`)
     }
   }
+}
+
+const UnexpectedMessage = (expect: string, accept: string): string => {
+  return `Expect: ${expect}, accept: ${accept}`
 }
