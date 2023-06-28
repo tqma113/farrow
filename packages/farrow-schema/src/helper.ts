@@ -10,6 +10,7 @@ import {
   isFieldDescriptors,
   FieldInfo,
   TypeOf,
+  isNullableType
 } from './schema'
 import * as S from './schema'
 
@@ -198,10 +199,6 @@ export const getSchemaCtorFields = (descriptors: S.FieldDescriptors): SchemaCtor
 export abstract class PartialType extends S.Schema {
   __type!: Partial<TypeOf<this['Item']>>
   abstract Item: S.SchemaCtor
-}
-
-const isNullableType = (input: any): input is new () => S.NullableType => {
-  return input?.prototype instanceof S.NullableType
 }
 
 const getPartialFields = (fields: FieldDescriptors) => {
